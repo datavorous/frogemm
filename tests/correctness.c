@@ -39,39 +39,59 @@ static void fill_data(float *A, float *B, int M, int N, int K) {
 static int run_case(int M, int N, int K, float tol) {
     float *A = (float *)malloc((size_t)M * (size_t)K * sizeof(float));
     float *B = (float *)malloc((size_t)K * (size_t)N * sizeof(float));
-    float *C = (float *)malloc((size_t)M * (size_t)N * sizeof(float));
+    float *C_naive = (float *)malloc((size_t)M * (size_t)N * sizeof(float));
+    float *C_tiled = (float *)malloc((size_t)M * (size_t)N * sizeof(float));
     float *C_ref = (float *)malloc((size_t)M * (size_t)N * sizeof(float));
-    if (!A || !B || !C || !C_ref) {
+    if (!A || !B || !C_naive || !C_tiled || !C_ref) {
         fprintf(stderr, "allocation failed for shape M=%d N=%d K=%d\n", M, N, K);
         free(A);
         free(B);
-        free(C);
+        free(C_naive);
+        free(C_tiled);
         free(C_ref);
         return 1;
     }
 
     fill_data(A, B, M, N, K);
     gemm_ref(M, N, K, A, B, C_ref);
-    frogemm_naive(M, N, K, A, B, C);
+    frogemm_naive(M, N, K, A, B, C_naive);
+    frogemm_tiled(M, N, K, A, B, C_tiled);
 
-    int mismatch = verify(C_ref, C, M, N, tol);
+    int mismatch = verify(C_ref, C_naive, M, N, tol);
     if (mismatch >= 0) {
         int row = mismatch / N;
         int col = mismatch % N;
         fprintf(stderr,
-                "FAIL M=%d N=%d K=%d at C[%d,%d]: got=%f expected=%f\n",
-                M, N, K, row, col, C[mismatch], C_ref[mismatch]);
+                "FAIL kernel=naive M=%d N=%d K=%d at C[%d,%d]: got=%f expected=%f\n",
+                M, N, K, row, col, C_naive[mismatch], C_ref[mismatch]);
         free(A);
         free(B);
-        free(C);
+        free(C_naive);
+        free(C_tiled);
         free(C_ref);
         return 1;
     }
 
-    printf("PASS M=%d N=%d K=%d\n", M, N, K);
+    mismatch = verify(C_ref, C_tiled, M, N, tol);
+    if (mismatch >= 0) {
+        int row = mismatch / N;
+        int col = mismatch % N;
+        fprintf(stderr,
+                "FAIL kernel=tiled M=%d N=%d K=%d at C[%d,%d]: got=%f expected=%f\n",
+                M, N, K, row, col, C_tiled[mismatch], C_ref[mismatch]);
+        free(A);
+        free(B);
+        free(C_naive);
+        free(C_tiled);
+        free(C_ref);
+        return 1;
+    }
+
+    printf("PASS M=%d N=%d K=%d (naive,tiled)\n", M, N, K);
     free(A);
     free(B);
-    free(C);
+    free(C_naive);
+    free(C_tiled);
     free(C_ref);
     return 0;
 }
