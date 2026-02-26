@@ -43,7 +43,34 @@ Link from another project:
 gcc main.c -I/path/to/frogemm/include -L/path/to/frogemm -lfrogemm -o app
 ```
 
-Minimal C example:
+## OpenMP / Parallel Support
+
+`frogemm_tiled` uses OpenMP for parallel execution.
+
+Build with OpenMP enabled (default in this repo):
+
+```bash
+make bench-ofast
+make lib
+```
+
+If you link `libfrogemm.a` from another project, also link OpenMP runtime:
+
+```bash
+gcc main.c -I/path/to/frogemm/include -L/path/to/frogemm -lfrogemm -fopenmp -o app
+```
+
+Control thread count at runtime:
+
+```bash
+OMP_NUM_THREADS=8 OMP_DYNAMIC=false OMP_PROC_BIND=true OMP_PLACES=cores ./bench/bench 1024 1024 1024
+```
+
+Notes:
+- `frogemm_naive` is single-threaded.
+- OpenMP thread count is chosen at runtime (not fixed at library build time).
+
+## Example
 
 ```c
 #include <stdio.h>
@@ -67,4 +94,4 @@ int main() {
 ## Kernels Implemented
 
 1. `frogemm_naive`: implemented
-2. `frogemm_tiled`: `36450.5 us` (median), `1.36%` efficiency, with `512^3` and `-Ofast -march=native` flags
+2. `frogemm_tiled`: implemented with multi threading

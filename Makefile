@@ -1,6 +1,8 @@
 CC = gcc
 CFLAGS_BASE = -Iinclude
-CFLAGS ?= -O3 $(CFLAGS_BASE)
+OMPFLAGS ?= -fopenmp
+CFLAGS ?= -O3 $(CFLAGS_BASE) $(OMPFLAGS)
+LDFLAGS ?= $(OMPFLAGS)
 AR = ar
 ARFLAGS = rcs
 PREFIX ?= /usr/local
@@ -13,7 +15,7 @@ LIB_OBJ = naive.o tiled.o
 all: $(BENCH_BIN)
 
 $(BENCH_BIN): bench/bench.c src/naive.c src/tiled.c include/frogemm.h
-	$(CC) $(CFLAGS) bench/bench.c src/naive.c src/tiled.c -o $(BENCH_BIN)
+	$(CC) $(CFLAGS) bench/bench.c src/naive.c src/tiled.c -o $(BENCH_BIN) $(LDFLAGS)
 
 lib: $(LIB_NAME)
 
@@ -36,19 +38,19 @@ uninstall:
 
 bench-o0:
 	$(MAKE) clean
-	$(MAKE) CFLAGS="-O0 $(CFLAGS_BASE)" $(BENCH_BIN)
+	$(MAKE) CFLAGS="-O0 $(CFLAGS_BASE) $(OMPFLAGS)" LDFLAGS="$(OMPFLAGS)" $(BENCH_BIN)
 
 bench-o2:
 	$(MAKE) clean
-	$(MAKE) CFLAGS="-O2 $(CFLAGS_BASE)" $(BENCH_BIN)
+	$(MAKE) CFLAGS="-O2 $(CFLAGS_BASE) $(OMPFLAGS)" LDFLAGS="$(OMPFLAGS)" $(BENCH_BIN)
 
 bench-o3:
 	$(MAKE) clean
-	$(MAKE) CFLAGS="-O3 $(CFLAGS_BASE)" $(BENCH_BIN)
+	$(MAKE) CFLAGS="-O3 $(CFLAGS_BASE) $(OMPFLAGS)" LDFLAGS="$(OMPFLAGS)" $(BENCH_BIN)
 
 bench-ofast:
 	$(MAKE) clean
-	$(MAKE) CFLAGS="-Ofast -march=native $(CFLAGS_BASE)" $(BENCH_BIN)
+	$(MAKE) CFLAGS="-Ofast -march=native $(CFLAGS_BASE) $(OMPFLAGS)" LDFLAGS="$(OMPFLAGS)" $(BENCH_BIN)
 
 clean:
 	rm -f $(BENCH_BIN) $(LIB_NAME) $(LIB_OBJ)

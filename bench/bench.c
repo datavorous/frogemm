@@ -26,6 +26,12 @@ static int cmp_double(const void *a, const void *b) {
     return 0;
 }
 
+static double wall_time_seconds(void) {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (double)ts.tv_sec + (double)ts.tv_nsec * 1e-9;
+}
+
 static double median_us_for_kernel(gemm_fn fn, int M, int N, int K, float *A, float *B, float *C, int runs, int warmup) {
     double timings[64];
     double usable[64];
@@ -35,10 +41,10 @@ static double median_us_for_kernel(gemm_fn fn, int M, int N, int K, float *A, fl
     }
 
     for (int r = 0; r < runs; r++) {
-        clock_t start = clock();
+        double start = wall_time_seconds();
         fn(M, N, K, A, B, C);
-        clock_t end = clock();
-        timings[r] = (double)(end - start) * 1000000.0 / CLOCKS_PER_SEC;
+        double end = wall_time_seconds();
+        timings[r] = (end - start) * 1000000.0;
     }
 
     for (int i = 0; i < runs - warmup; i++) {

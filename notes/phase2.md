@@ -28,3 +28,30 @@ Naive vs tiled:
 
 Observation:
 - `tiled` is faster than `naive` at `-O2`, `-O3`, and `-Ofast` in this run, but slower at `-O0`.
+
+## OpenMP Benchmark (2026-02-26) - 512, 1024, 2048
+
+Benchmark setup:
+- Build: `make bench-ofast`
+- Flags: `-Ofast -march=native -Iinclude -fopenmp`
+- Runtime env: `OMP_NUM_THREADS=8 OMP_PROC_BIND=true OMP_PLACES=cores OMP_DYNAMIC=false`
+- Runs: `10`, excluding first `2`
+- Timing: wall-clock (`clock_gettime(CLOCK_MONOTONIC)`)
+- Turbo Boost: disabled
+
+Results:
+
+1. `M=N=K=512`
+- `naive`: `37379.6150 us`, `1.33%`
+- `tiled (OpenMP)`: `14092.7810 us`, `3.53%`
+- Speedup (`naive/tiled`): `2.65x`
+
+2. `M=N=K=1024`
+- `naive`: `307963.1675 us`, `1.29%`
+- `tiled (OpenMP)`: `93671.9440 us`, `4.25%`
+- Speedup (`naive/tiled`): `3.29x`
+
+3. `M=N=K=2048`
+- `naive`: `3439462.6410 us`, `0.92%`
+- `tiled (OpenMP)`: `755889.1760 us`, `4.21%`
+- Speedup (`naive/tiled`): `4.55x`
