@@ -7,8 +7,8 @@ BENCH_BIN = bench/bench
 
 all: $(BENCH_BIN)
 
-$(BENCH_BIN): bench/bench.c src/naive.c include/frogemm.h
-	$(CC) $(CFLAGS) bench/bench.c src/naive.c -o $(BENCH_BIN)
+$(BENCH_BIN): bench/bench.c src/naive.c src/tiled.c include/frogemm.h
+	$(CC) $(CFLAGS) bench/bench.c src/naive.c src/tiled.c -o $(BENCH_BIN)
 
 bench-o0:
 	$(MAKE) clean

@@ -71,6 +71,7 @@ int main(int argc, char *argv[]) {
     // declared in include/frogemm.h
     kernel_entry kernels[] = {
         {"naive", frogemm_naive},
+        {"tiled", frogemm_tiled},
     };
 
     const int kernel_count = (int)(sizeof(kernels) / sizeof(kernels[0]));
