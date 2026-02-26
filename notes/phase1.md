@@ -10,24 +10,48 @@ Benchmark setup:
 - Kernel: `naive`
 - Runs: `10`, excluding first `2` (cold start)
 - Peak reference: `540 GFLOPS` from `notes/device.md`
+- Turbo Boost: disabled
 
 Compiler flag comparison:
 
 1. `-O0 -Iinclude`
-median time: `552924.5 us`  
-efficiency: `0.09%`
+median time: `1166209.0 us`  
+efficiency: `0.04%`
 
 2. `-O2 -Iinclude`
-median time: `211749.0 us`  
-efficiency: `0.23%`
+median time: `433362.0 us`  
+efficiency: `0.11%`
 
 3. `-O3 -Iinclude`
-median time: `218277.5 us`  
-efficiency: `0.23%`
+median time: `483796.5 us`  
+efficiency: `0.10%`
 
 4. `-Ofast -march=native -Iinclude`
-median time: `234614.0 us`  
-efficiency: `0.21%`
+median time: `470632.0 us`  
+efficiency: `0.11%`
 
 Observation:
-- `-O2` was best for this current naive implementation on this machine.
+- `-O2` was best for this i-j-k naive implementation on this machine.
+
+## Changed i-j-k to i-k-j.
+
+Compiler flag comparison:
+
+1. `-O0 -Iinclude`
+median time: `635838.5 us`  
+efficiency: `0.08%`
+
+2. `-O2 -Iinclude`
+median time: `146596.0 us`  
+efficiency: `0.34%`
+
+3. `-O3 -Iinclude`
+median time: `46934.0 us`  
+efficiency: `1.06%`
+
+4. `-Ofast -march=native -Iinclude`
+median time: `35480.5 us`  
+efficiency: `1.40%`
+
+Observation:
+- `-Ofast -march=native` is best for this updated naive implementation on this machine.

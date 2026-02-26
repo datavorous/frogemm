@@ -17,4 +17,4 @@ make
 
 ## Kernels Implemented
 
-1. `frogemm_naive`: `211749.0 us` (median), `0.23%` efficiency, with `512^3` and `-O2` flag
+1. `frogemm_naive`: `35480.5 us` (median), `1.40%` efficiency, with `512^3` and `-Ofast -march=native` flags
